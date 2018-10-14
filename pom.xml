@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.hky</groupId>
+    <artifactId>SparkKafkaConsumerBatch</artifactId>
+    <name>${project.artifactId}</name>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <deploy.name>SparkKafkaConsumerBatch</deploy.name>
+        <target.jdk.version>1.8</target.jdk.version>
+        <version.artifactory.plugin>2.4.0</version.artifactory.plugin>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Dependencies versions -->
+        <scala.version>[2.11.0]</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
+        <scala.logging.version>[2.1.2]</scala.logging.version>
+        <hadoop.MapR.version>[3.1.0]</hadoop.MapR.version>
+        <spark.MapR.version>[2.3.0]</spark.MapR.version>
+        <apache.kafka.version>[0.10.0.0]</apache.kafka.version>
+
+        <!-- Dependencies scope (override to include them into fat jars -->
+        <scala.lang.scope>compile</scala.lang.scope>
+        <scala.logging.scope>compile</scala.logging.scope>
+        <spark.MapR.scope>compile</spark.MapR.scope>
+        <hadoop.MapR.scope>compile</hadoop.MapR.scope>
+        <apache.kafka.scope>compile</apache.kafka.scope>
+        <module.spark-kafka-streaming.version>0.0.4</module.spark-kafka-streaming.version>
+        <!-- Plugins versions -->
+        <maven.artifactory.plugin.version>${version.artifactory.plugin}</maven.artifactory.plugin.version>
+        <maven.version.plugin.version>2.2</maven.version.plugin.version>
+        <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
+        <maven.scala.plugin.version>3.2.1</maven.scala.plugin.version>
+    </properties>
+
+
+    <dependencies>
+        <!-- Scala dependencies -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+            <scope>${scala.lang.scope}</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.typesafe.scala-logging</groupId>
+            <artifactId>scala-logging-slf4j_${scala.binary.version}</artifactId>
+            <version>${scala.logging.version}</version>
+            <scope>${scala.logging.scope}</scope>
+        </dependency>
+
+        <!-- MAPR Hadoop dependencies -->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>${hadoop.MapR.version}</version>
+            <scope>${hadoop.MapR.scope}</scope>
+
+            <exclusions>
+                <exclusion>
+                    <artifactId>jdk.tools</artifactId>
+                    <groupId>jdk.tools</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>servlet-api</artifactId>
+                    <groupId>javax.servlet</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+        <!-- MAPR Spark dependencies -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_${scala.binary.version}</artifactId>
+            <version>${spark.MapR.version}</version>
+            <scope>${spark.MapR.scope}</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-unsafe_${scala.binary.version}</artifactId>
+            <version>${spark.MapR.version}</version>
+            <scope>${spark.MapR.scope}</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming_${scala.binary.version}</artifactId>
+            <version>${spark.MapR.version}</version>
+            <scope>${spark.MapR.scope}</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming-kafka-0-10_${scala.binary.version}</artifactId>
+            <version>${spark.MapR.version}</version>
+            <scope>${spark.MapR.scope}</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_${scala.binary.version}</artifactId>
+            <version>${spark.MapR.version}</version>
+            <scope>${spark.MapR.scope}</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-yarn_${scala.binary.version}</artifactId>
+            <version>${spark.MapR.version}</version>
+            <scope>${spark.MapR.scope}</scope>
+        </dependency>
+
+        <!-- Apache Kafka dependencies -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>${apache.kafka.version}</version>
+            <scope>${apache.kafka.scope}</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_${scala.binary.version}</artifactId>
+            <version>${apache.kafka.version}</version>
+            <scope>${apache.kafka.scope}</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+
+        <plugins>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <args>
+                                <arg>-dependencyfile</arg>
+                                <arg>${project.build.directory}/.scala_dependencies</arg>
+                            </args>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+                <configuration>
+                    <useFile>false</useFile>
+                    <disableXmlReport>true</disableXmlReport>
+                    <includes>
+                        <include>**/*Test.*</include>
+                        <include>**/*Suite.*</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <descriptor>src/main/resources/assembly/jar-with-dependencies.xml</descriptor>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>create-archive</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+</build>
+
+</project>
+
